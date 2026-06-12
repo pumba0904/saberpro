@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cargar Comprobante - Saber Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/uts-theme.css}">
+    <style>
+        body { background: radial-gradient(circle at top left, rgba(140,198,63,.22), transparent 35%), linear-gradient(135deg,#f6fbf7 0%,#eef7f0 45%,#ffffff 100%); color: #183225; font-family: 'Segoe UI', Arial, sans-serif; }
+        .sidebar { background: linear-gradient(180deg,#05642a,#0b8f3a); min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; box-shadow: 10px 0 28px rgba(5,100,42,.18); }
+        .sidebar .brand { color: #fff; font-size: 21px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar .brand::after{ content:'Unidades Tecnológicas de Santander'; display:block; margin-top:6px; font-size:11px; color:rgba(255,255,255,.78); font-weight:500; line-height:1.2; }
+        .sidebar a { display: block; color: rgba(255,255,255,.82); text-decoration: none; padding: 12px 20px; font-size: 14px; border-left:4px solid transparent; transition:all .2s ease; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,.14); color:#fff; border-left-color:#8cc63f; transform:translateX(3px); }
+        .sidebar a i { margin-right: 10px; }
+        .top-bar { background: rgba(255,255,255,.92); padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #dce8df; display: flex; justify-content: space-between; align-items: center; box-shadow:0 8px 24px rgba(24,50,37,.06); }
+        .main-content { margin-left: 250px; padding: 30px; animation: fade .45s ease both; }
+        @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+        .status-box{background:#e9f8ef;border-left:4px solid #0b8f3a;border-radius:14px;padding:16px;}
+        @media(max-width:768px){ .sidebar{position:relative;width:100%;min-height:auto}.main-content,.top-bar{margin-left:0} }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+    <a href="/estudiante/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/estudiante/perfil"><i class="bi bi-person"></i> Mis Datos</a>
+    <a href="/estudiante/resultado/ultimo"><i class="bi bi-bar-chart"></i> Último Resultado</a>
+    <a href="/estudiante/resultados"><i class="bi bi-clock-history"></i> Todos mis Resultados</a>
+    <a href="/estudiante/pago" class="active"><i class="bi bi-receipt"></i> Cargar Comprobante</a>
+    <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+</div>
+
+<div class="top-bar">
+    <h5 class="mb-0"><i class="bi bi-receipt me-1"></i> Cargar recibo de pago Saber Pro</h5>
+    <span class="text-muted" th:text="${#authentication.name}">estudiante</span>
+</div>
+
+<div class="main-content">
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="receipt-card">
+                <h5 class="mb-3">Subir comprobante</h5>
+                <p class="text-muted">Carga el recibo de pago en formato PDF o imagen. Una vez cargado, coordinación podrá revisarlo y aprobar tu inscripción al Saber Pro.</p>
+                <form th:action="@{/estudiante/pago/subir}" method="post" enctype="multipart/form-data">
+                    <label class="form-label">Archivo del recibo</label>
+                    <input class="form-control mb-3" type="file" name="archivo" accept="application/pdf,image/*" required>
+                    <button type="submit" class="btn-uts"><i class="bi bi-upload me-1"></i> Subir recibo</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="receipt-card">
+                <h5 class="mb-3">Estado actual</h5>
+                <div class="status-box mb-3">
+                    <div th:if="${estudiante.tieneReciboPago()}">
+                        <span class="badge-recibo"><i class="bi bi-check-circle me-1"></i> Recibo cargado</span>
+                        <p class="mb-1 mt-3"><strong>Archivo:</strong> <span th:text="${estudiante.reciboPagoNombre}"></span></p>
+                        <p class="mb-2"><strong>Fecha:</strong> <span th:text="${#temporals.format(estudiante.fechaCargueRecibo, 'dd/MM/yyyy HH:mm')}"></span></p>
+                        <a href="/estudiante/pago/descargar" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-eye me-1"></i> Ver comprobante</a>
+                    </div>
+                    <div th:unless="${estudiante.tieneReciboPago()}">
+                        <span class="badge-sin-recibo"><i class="bi bi-exclamation-circle me-1"></i> Sin recibo cargado</span>
+                        <p class="mb-0 mt-3">Aún no has subido el comprobante. Sin este archivo, coordinación no podrá aprobarte.</p>
+                    </div>
+                </div>
+                <p class="mb-0"><strong>Aprobación Saber Pro:</strong>
+                    <span th:if="${estudiante.aprobadoSaberPro}" class="badge-recibo">Aprobado</span>
+                    <span th:unless="${estudiante.aprobadoSaberPro}" class="badge-sin-recibo">Pendiente</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

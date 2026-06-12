@@ -2,14 +2,19 @@ package com.university.saberpro.controller;
 
 import com.university.saberpro.model.Director;
 import com.university.saberpro.model.Docente;
+import com.university.saberpro.model.Estudiante;
 import com.university.saberpro.model.Facultad;
 import com.university.saberpro.model.Usuario;
 import com.university.saberpro.service.DirectorService;
+import com.university.saberpro.service.EstudianteService;
 import com.university.saberpro.service.DocenteService;
 import com.university.saberpro.service.FacultadService;
 import com.university.saberpro.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +33,8 @@ public class AdminController {
     @Autowired
     private UsuarioService usuarioService;
     @Autowired
+    private EstudianteService estudianteService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("/dashboard")
@@ -35,7 +42,28 @@ public class AdminController {
         model.addAttribute("totalFacultades", facultadService.listarTodas().size());
         model.addAttribute("totalDocentes", docenteService.listarTodos().size());
         model.addAttribute("totalDirectores", directorService.listarTodos().size());
+        model.addAttribute("totalEstudiantes", estudianteService.listarTodos().size());
         return "admin/dashboard";
+    }
+
+
+    // ===== ESTUDIANTES (consulta administrador) =====
+    @GetMapping("/estudiantes")
+    public String listarEstudiantes(Model model) {
+        model.addAttribute("estudiantes", estudianteService.listarTodos());
+        return "admin/estudiantes";
+    }
+
+
+    @GetMapping("/estudiantes/recibo/{id}")
+    public ResponseEntity<byte[]> verReciboEstudiante(@PathVariable Long id) {
+        return estudianteService.buscarPorId(id)
+                .filter(Estudiante::tieneReciboPago)
+                .map(e -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + e.getReciboPagoNombre() + "\"")
+                        .contentType(MediaType.parseMediaType(e.getReciboPagoTipo()))
+                        .body(e.getReciboPagoArchivo()))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // ===== FACULTADES =====

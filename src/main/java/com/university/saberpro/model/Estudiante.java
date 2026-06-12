@@ -2,6 +2,7 @@ package com.university.saberpro.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "estudiantes")
@@ -34,6 +35,16 @@ public class Estudiante {
 
     private boolean aprobadoSaberPro = false;
 
+    private String reciboPagoNombre;
+
+    private String reciboPagoTipo;
+
+    private LocalDateTime fechaCargueRecibo;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] reciboPagoArchivo;
+
     @ManyToOne
     @JoinColumn(name = "facultad_id")
     private Facultad facultad;
@@ -65,6 +76,15 @@ public class Estudiante {
     public void setTelefono(String telefono) { this.telefono = telefono; }
     public boolean isAprobadoSaberPro() { return aprobadoSaberPro; }
     public void setAprobadoSaberPro(boolean aprobadoSaberPro) { this.aprobadoSaberPro = aprobadoSaberPro; }
+    public String getReciboPagoNombre() { return reciboPagoNombre; }
+    public void setReciboPagoNombre(String reciboPagoNombre) { this.reciboPagoNombre = reciboPagoNombre; }
+    public String getReciboPagoTipo() { return reciboPagoTipo; }
+    public void setReciboPagoTipo(String reciboPagoTipo) { this.reciboPagoTipo = reciboPagoTipo; }
+    public LocalDateTime getFechaCargueRecibo() { return fechaCargueRecibo; }
+    public void setFechaCargueRecibo(LocalDateTime fechaCargueRecibo) { this.fechaCargueRecibo = fechaCargueRecibo; }
+    public byte[] getReciboPagoArchivo() { return reciboPagoArchivo; }
+    public void setReciboPagoArchivo(byte[] reciboPagoArchivo) { this.reciboPagoArchivo = reciboPagoArchivo; }
+    public boolean tieneReciboPago() { return reciboPagoArchivo != null && reciboPagoArchivo.length > 0; }
     public Facultad getFacultad() { return facultad; }
     public void setFacultad(Facultad facultad) { this.facultad = facultad; }
     public Usuario getUsuario() { return usuario; }

@@ -9,6 +9,9 @@ import com.university.saberpro.service.ResultadoSaberProService;
 import com.university.saberpro.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -64,12 +67,15 @@ public class CoordinacionController {
             facultadService.buscarPorId(facultadId).ifPresent(estudiante::setFacultad);
         }
 
-        // Preservar estado aprobado si ya existía
+        // Preservar información que no se edita desde este formulario
         if (estudiante.getId() != null) {
             estudianteService.buscarPorId(estudiante.getId()).ifPresent(existente -> {
-                if (existente.isAprobadoSaberPro()) {
-                    estudiante.setAprobadoSaberPro(true);
-                }
+                estudiante.setAprobadoSaberPro(existente.isAprobadoSaberPro());
+                estudiante.setReciboPagoNombre(existente.getReciboPagoNombre());
+                estudiante.setReciboPagoTipo(existente.getReciboPagoTipo());
+                estudiante.setFechaCargueRecibo(existente.getFechaCargueRecibo());
+                estudiante.setReciboPagoArchivo(existente.getReciboPagoArchivo());
+                estudiante.setUsuario(existente.getUsuario());
             });
         }
 
@@ -106,11 +112,37 @@ public class CoordinacionController {
     @GetMapping("/estudiantes/aprobar/{id}")
     public String aprobarEstudiante(@PathVariable Long id, RedirectAttributes ra) {
         estudianteService.buscarPorId(id).ifPresent(e -> {
+            if (!e.tieneReciboPago()) {
+                ra.addFlashAttribute("error", "No se puede aprobar: el estudiante aún no ha cargado el recibo de pago.");
+                return;
+            }
             e.setAprobadoSaberPro(true);
             estudianteService.guardar(e);
+            ra.addFlashAttribute("mensaje", "Estudiante aprobado para Saber Pro");
         });
-        ra.addFlashAttribute("mensaje", "Estudiante aprobado para Saber Pro");
         return "redirect:/coordinacion/estudiantes";
+    }
+
+    @GetMapping("/estudiantes/rechazar/{id}")
+    public String rechazarEstudiante(@PathVariable Long id, RedirectAttributes ra) {
+        estudianteService.buscarPorId(id).ifPresent(e -> {
+            e.setAprobadoSaberPro(false);
+            estudianteService.guardar(e);
+        });
+        ra.addFlashAttribute("mensaje", "Aprobación del estudiante marcada como pendiente");
+        return "redirect:/coordinacion/estudiantes";
+    }
+
+    @GetMapping("/estudiantes/recibo/{id}")
+    public ResponseEntity<byte[]> verRecibo(@PathVariable Long id) {
+        Estudiante estudiante = estudianteService.buscarPorId(id).orElse(null);
+        if (estudiante == null || !estudiante.tieneReciboPago()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + estudiante.getReciboPagoNombre() + "\"")
+                .contentType(MediaType.parseMediaType(estudiante.getReciboPagoTipo()))
+                .body(estudiante.getReciboPagoArchivo());
     }
 
     // ===== RESULTADOS =====

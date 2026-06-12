@@ -98,6 +98,101 @@
             font-size: 12px;
         }
     </style>
+
+    <!-- Tema visual UTS agregado -->
+    <style>
+        :root{
+            --uts-green:#0b8f3a;
+            --uts-green-dark:#05642a;
+            --uts-green-soft:#e9f8ef;
+            --uts-lime:#8cc63f;
+            --uts-text:#183225;
+            --uts-muted:#68746d;
+            --uts-border:#dce8df;
+            --uts-bg:#f4f8f5;
+        }
+        body{
+            background: radial-gradient(circle at top left, rgba(140,198,63,.22), transparent 35%), linear-gradient(135deg,#f6fbf7 0%,#eef7f0 45%,#ffffff 100%) !important;
+            color: var(--uts-text) !important;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        body::before{
+            content:""; position:fixed; inset:0; pointer-events:none; opacity:.35;
+            background-image: radial-gradient(var(--uts-green) 1px, transparent 1px);
+            background-size: 28px 28px;
+            z-index:-1;
+        }
+        .sidebar{
+            background: linear-gradient(180deg,var(--uts-green-dark),var(--uts-green)) !important;
+            box-shadow: 10px 0 28px rgba(5,100,42,.18);
+        }
+        .sidebar .brand{
+            color:#fff !important; font-size:21px !important; letter-spacing:.2px;
+        }
+        .sidebar .brand::after{
+            content:'Unidades Tecnológicas de Santander'; display:block; margin-top:6px;
+            font-size:11px; color:rgba(255,255,255,.78); font-weight:500; line-height:1.2;
+        }
+        .sidebar a{ color:rgba(255,255,255,.82) !important; border-left:4px solid transparent; transition:all .2s ease; }
+        .sidebar a:hover,.sidebar a.active{
+            background:rgba(255,255,255,.14) !important; color:#fff !important; border-left-color:var(--uts-lime);
+            transform:translateX(3px);
+        }
+        .top-bar{
+            background:rgba(255,255,255,.92) !important; backdrop-filter:blur(10px);
+            border-bottom:1px solid var(--uts-border) !important; color:var(--uts-text) !important;
+            box-shadow:0 8px 24px rgba(24,50,37,.06);
+        }
+        .main-content{ animation: utsFade .45s ease both; }
+        @keyframes utsFade{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+        .stat-card, .card, .table-responsive{
+            background:#fff !important; color:var(--uts-text) !important; border:1px solid var(--uts-border) !important;
+            border-radius:18px !important; box-shadow:0 14px 34px rgba(24,50,37,.08) !important;
+        }
+        .stat-card{ transition:transform .18s ease, box-shadow .18s ease; }
+        .stat-card:hover{ transform:translateY(-4px); box-shadow:0 18px 38px rgba(5,100,42,.14) !important; }
+        .stat-card .number, .stat-card h6, h1, h2, h3, h4, h5{ color:var(--uts-green-dark) !important; }
+        .stat-card .label, .text-muted{ color:var(--uts-muted) !important; }
+        .btn-danger, .btn-primary, .btn-login{
+            background:linear-gradient(135deg,var(--uts-green),var(--uts-green-dark)) !important; border-color:var(--uts-green) !important;
+            color:#fff !important; box-shadow:0 8px 18px rgba(11,143,58,.22);
+        }
+        .btn-danger:hover, .btn-primary:hover, .btn-login:hover{ filter:brightness(.95); transform:translateY(-1px); }
+        .btn-outline-danger, .btn-outline-primary{
+            color:var(--uts-green-dark) !important; border-color:var(--uts-green) !important; background:#fff !important;
+        }
+        .btn-outline-danger:hover, .btn-outline-primary:hover{
+            background:var(--uts-green) !important; color:#fff !important;
+        }
+        table{ color:var(--uts-text) !important; }
+        thead, .table-dark{ background:var(--uts-green-dark) !important; color:#fff !important; }
+        .table-striped>tbody>tr:nth-of-type(odd)>*{ background-color:var(--uts-green-soft) !important; color:var(--uts-text) !important; }
+        .form-control, .form-select{
+            background:#fff !important; color:var(--uts-text) !important; border:1px solid var(--uts-border) !important; border-radius:12px !important;
+        }
+        .form-control:focus, .form-select:focus{
+            border-color:var(--uts-green) !important; box-shadow:0 0 0 .2rem rgba(11,143,58,.16) !important;
+        }
+        .form-label{ color:var(--uts-text) !important; font-weight:600; }
+        .alert{ border-radius:14px !important; }
+        .login-card{
+            background:rgba(255,255,255,.94) !important; border:1px solid rgba(11,143,58,.18) !important;
+            box-shadow:0 24px 65px rgba(5,100,42,.22) !important; color:var(--uts-text) !important; position:relative; overflow:hidden;
+        }
+        .login-card::before{
+            content:'UTS'; position:absolute; top:18px; right:18px; width:58px; height:58px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--uts-green),var(--uts-lime));
+            color:#fff; font-weight:800; letter-spacing:.8px; box-shadow:0 10px 22px rgba(11,143,58,.25);
+        }
+        .login-card h2{ color:var(--uts-green-dark) !important; margin-top:18px; }
+        .login-card p.subtitle{ color:var(--uts-muted) !important; }
+        .login-card p.subtitle::after{
+            content:'\A Unidades Tecnológicas de Santander'; white-space:pre; display:block; color:var(--uts-green); font-weight:700; margin-top:7px;
+        }
+        @media(max-width:768px){ .sidebar{position:relative !important; width:100% !important; min-height:auto !important;} .main-content,.top-bar{margin-left:0 !important;} }
+    </style>
+
+    <link rel="stylesheet" th:href="@{/css/uts-theme.css}">
 </head>
 
 <body>
@@ -105,12 +200,13 @@
 <div class="sidebar">
     <div class="brand">
         <i class="bi bi-mortarboard"></i> Saber Pro
-		<a href="/coordinacion/informes"><i class="bi bi-file-earmark-bar-graph"></i> Informes</a>
     </div>
 
     <a href="/coordinacion/dashboard">
         <i class="bi bi-speedometer2"></i> Dashboard
     </a>
+
+    <a href="/coordinacion/informes"><i class="bi bi-file-earmark-bar-graph"></i> Informes</a>
 
     <a href="/coordinacion/estudiantes" class="active">
         <i class="bi bi-people"></i> Estudiantes
@@ -135,6 +231,10 @@
         <span th:text="${mensaje}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <div th:if="${error}" class="alert alert-warning alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 
     <div class="card-table p-3">
 
@@ -148,6 +248,7 @@
                 <th>Correo</th>
                 <th>Facultad</th>
                 <th>Saber Pro</th>
+                <th>Recibo</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -178,13 +279,36 @@
                 </td>
 
                 <td>
+                    <span th:if="${e.tieneReciboPago()}" class="badge-recibo">
+                        <i class="bi bi-receipt me-1"></i> Cargado
+                    </span>
+                    <span th:unless="${e.tieneReciboPago()}" class="badge-sin-recibo">
+                        Sin recibo
+                    </span>
+                    <a th:if="${e.tieneReciboPago()}" th:href="@{/coordinacion/estudiantes/recibo/{id}(id=${e.id})}" target="_blank" class="btn btn-sm btn-outline-success ms-1" title="Ver recibo">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </td>
+
+                <td>
 
                     <!-- Aprobar -->
                     <a th:href="@{/coordinacion/estudiantes/aprobar/{id}(id=${e.id})}"
-                       th:if="${!e.aprobadoSaberPro}"
+                       th:if="${!e.aprobadoSaberPro and e.tieneReciboPago()}"
                        class="btn btn-sm btn-outline-success me-1"
+                       title="Aprobar estudiante"
                        onclick="return confirm('¿Aprobar este estudiante?')">
                         <i class="bi bi-check"></i>
+                    </a>
+                    <button th:if="${!e.aprobadoSaberPro and !e.tieneReciboPago()}" class="btn btn-sm btn-outline-secondary me-1" title="No se puede aprobar sin recibo" disabled>
+                        <i class="bi bi-lock"></i>
+                    </button>
+                    <a th:href="@{/coordinacion/estudiantes/rechazar/{id}(id=${e.id})}"
+                       th:if="${e.aprobadoSaberPro}"
+                       class="btn btn-sm btn-outline-secondary me-1"
+                       title="Marcar como pendiente"
+                       onclick="return confirm('¿Marcar este estudiante como pendiente?')">
+                        <i class="bi bi-x-circle"></i>
                     </a>
 
                     <!-- Editar -->
@@ -212,7 +336,7 @@
             </tr>
 
             <tr th:if="${#lists.isEmpty(estudiantes)}">
-                <td colspan="7" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted">
                     No hay estudiantes registrados
                 </td>
             </tr>

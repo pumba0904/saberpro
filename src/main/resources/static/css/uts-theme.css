@@ -1,0 +1,7 @@
+
+:root{--uts-green:#0b8f3a;--uts-green-dark:#05642a;--uts-lime:#8cc63f;--uts-soft:#e9f8ef;--uts-text:#183225;--uts-border:#dce8df;}
+.receipt-card{background:#fff;border:1px solid var(--uts-border);border-radius:18px;box-shadow:0 14px 34px rgba(24,50,37,.08);padding:24px;}
+.badge-recibo{background:rgba(11,143,58,.12);color:var(--uts-green-dark);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;}
+.badge-sin-recibo{background:rgba(234,179,8,.14);color:#a16207;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:600;}
+.btn-uts{background:linear-gradient(135deg,var(--uts-green),var(--uts-green-dark));border:0;color:#fff;border-radius:10px;padding:9px 14px;box-shadow:0 8px 18px rgba(11,143,58,.20);text-decoration:none;display:inline-block;}
+.btn-uts:hover{color:#fff;filter:brightness(.96);transform:translateY(-1px);}
