@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Estudiante - Docente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; }
+        .sidebar { background: #1e293b; min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; }
+        .sidebar .brand { color: #e94560; font-size: 20px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: #0f172a; color: #e94560; }
+        .sidebar a i { margin-right: 10px; }
+        .main-content { margin-left: 250px; padding: 30px; }
+        .top-bar { background: #1e293b; padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .card-dark { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 24px; }
+        .form-control, .form-select { background: rgba(255,255,255,0.05); border: 1px solid #334155; color: #e2e8f0; border-radius: 8px; }
+        .form-control:focus, .form-select:focus { background: rgba(255,255,255,0.08); border-color: #e94560; color: #e2e8f0; box-shadow: none; }
+        .form-label { color: #94a3b8; font-size: 13px; }
+        .form-select option { background: #1e293b; }
+        .table { color: #e2e8f0; }
+        .table thead th { background: #0f172a; color: #94a3b8; border-color: #334155; font-size: 13px; }
+        .table tbody td { border-color: #334155; font-size: 14px; vertical-align: middle; }
+        .table tbody tr:hover { background: #0f172a; }
+        .result-card { background: #0f172a; border-radius: 10px; padding: 20px; border-left: 4px solid #e94560; margin-top: 20px; }
+        .section-title { color: #e94560; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 8px; border-bottom: 1px solid #334155; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+        <a href="/docente/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/docente/estudiantes/buscar" class="active"><i class="bi bi-search"></i> Buscar Estudiante</a>
+        <a href="/docente/estudiantes"><i class="bi bi-people"></i> Todos los Estudiantes</a>
+        <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="top-bar">
+        <h5 class="mb-0">Buscar Estudiante</h5>
+        <span class="text-muted" th:text="${#authentication.name}">docente</span>
+    </div>
+
+    <div class="main-content">
+        <div class="row g-4">
+
+            <!-- Buscar por cédula -->
+            <div class="col-md-6">
+                <div class="card-dark">
+                    <div class="section-title"><i class="bi bi-person-badge me-1"></i> Buscar por Cédula</div>
+                    <form th:action="@{/docente/estudiantes/buscar}" method="get">
+                        <div class="mb-3">
+                            <label class="form-label">Número de Documento</label>
+                            <input type="text" name="cedula" class="form-control"
+                                   th:value="${cedula}" placeholder="Ej: 1098765432" required>
+                        </div>
+                        <button type="submit" class="btn btn-sm" style="background:#e94560; color:#fff; border-radius:8px;">
+                            <i class="bi bi-search me-1"></i> Buscar
+                        </button>
+                    </form>
+
+                    <!-- Resultado búsqueda por cédula -->
+                    <div th:if="${estudianteEncontrado}" class="result-card mt-3">
+                        <h6 style="color:#e94560;" class="mb-3">Estudiante Encontrado</h6>
+                        <p class="mb-1"><span style="color:#94a3b8;">Nombre:</span>
+                            <strong th:text="${estudianteEncontrado.primerNombre + ' ' + estudianteEncontrado.primerApellido}"></strong></p>
+                        <p class="mb-1"><span style="color:#94a3b8;">Documento:</span>
+                            <span th:text="${estudianteEncontrado.tipoDocumento + ': ' + estudianteEncontrado.numeroDocumento}"></span></p>
+                        <p class="mb-1"><span style="color:#94a3b8;">Facultad:</span>
+                            <span th:text="${estudianteEncontrado.facultad != null ? estudianteEncontrado.facultad.nombre : 'Sin asignar'}"></span></p>
+                        <p class="mb-3"><span style="color:#94a3b8;">Estado:</span>
+                            <span th:if="${estudianteEncontrado.aprobadoSaberPro}"
+                                  style="color:#22c55e;"><i class="bi bi-check-circle me-1"></i>Aprobado Saber Pro</span>
+                            <span th:unless="${estudianteEncontrado.aprobadoSaberPro}"
+                                  style="color:#f59e0b;"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                        </p>
+                        <a th:href="@{/docente/estudiantes/{id}/resultados(id=${estudianteEncontrado.id})}"
+                           class="btn btn-sm" style="background:rgba(99,102,241,0.15); color:#818cf8; border-radius:6px;">
+                            <i class="bi bi-bar-chart me-1"></i> Ver Resultados
+                        </a>
+                    </div>
+
+                    <div th:if="${cedula != null and estudianteEncontrado == null}" class="mt-3"
+                         style="color:#ef4444; font-size:14px;">
+                        <i class="bi bi-exclamation-circle me-1"></i> No se encontró ningún estudiante con ese documento.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtrar por facultad -->
+            <div class="col-md-6">
+                <div class="card-dark">
+                    <div class="section-title"><i class="bi bi-building me-1"></i> Filtrar por Facultad</div>
+                    <form th:action="@{/docente/estudiantes/buscar}" method="get">
+                        <div class="mb-3">
+                            <label class="form-label">Facultad</label>
+                            <select name="facultadId" class="form-select">
+                                <option value="">-- Seleccionar facultad --</option>
+                                <option th:each="f : ${facultades}"
+                                        th:value="${f.id}"
+                                        th:text="${f.nombre}"
+                                        th:selected="${f.id == facultadId}"></option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-sm" style="background:#e94560; color:#fff; border-radius:8px;">
+                            <i class="bi bi-filter me-1"></i> Filtrar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla por facultad -->
+        <div th:if="${estudiantesFacultad}" class="card-dark mt-4">
+            <div class="section-title"><i class="bi bi-people me-1"></i> Estudiantes de la Facultad</div>
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(estudiantesFacultad)}">
+                        <td colspan="5" class="text-center py-3" style="color:#64748b;">Sin estudiantes en esta facultad</td>
+                    </tr>
+                    <tr th:each="e : ${estudiantesFacultad}">
+                        <td th:text="${e.numeroDocumento}">-</td>
+                        <td th:text="${e.primerNombre + ' ' + e.primerApellido}">-</td>
+                        <td th:text="${e.correo}">-</td>
+                        <td>
+                            <span th:if="${e.aprobadoSaberPro}" style="color:#22c55e; font-size:13px;">
+                                <i class="bi bi-check-circle"></i> Aprobado
+                            </span>
+                            <span th:unless="${e.aprobadoSaberPro}" style="color:#f59e0b; font-size:13px;">
+                                <i class="bi bi-clock"></i> Pendiente
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/docente/estudiantes/{id}/resultados(id=${e.id})}"
+                               class="btn btn-sm" style="background:rgba(99,102,241,0.15); color:#818cf8; border-radius:6px;">
+                                <i class="bi bi-bar-chart"></i> Resultados
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

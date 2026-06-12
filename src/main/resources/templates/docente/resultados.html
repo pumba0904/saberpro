@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados - Docente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; }
+        .sidebar { background: #1e293b; min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; }
+        .sidebar .brand { color: #e94560; font-size: 20px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: #0f172a; color: #e94560; }
+        .sidebar a i { margin-right: 10px; }
+        .main-content { margin-left: 250px; padding: 30px; }
+        .top-bar { background: #1e293b; padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .card-dark { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 24px; }
+        .table { color: #e2e8f0; }
+        .table thead th { background: #0f172a; color: #94a3b8; border-color: #334155; font-size: 13px; }
+        .table tbody td { border-color: #334155; font-size: 14px; vertical-align: middle; }
+        .table tbody tr:hover { background: #0f172a; }
+        .info-estudiante { background: #0f172a; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; border-left: 4px solid #e94560; }
+        .competencia-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; }
+        .competencia-row:last-child { border-bottom: none; }
+        .badge-nivel { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .nivel-ALTO { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .nivel-MEDIO { background: rgba(234,179,8,0.15); color: #eab308; }
+        .nivel-BAJO { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .puntaje-big { font-size: 48px; font-weight: 700; color: #e94560; line-height: 1; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+        <a href="/docente/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/docente/estudiantes/buscar" class="active"><i class="bi bi-search"></i> Buscar Estudiante</a>
+        <a href="/docente/estudiantes"><i class="bi bi-people"></i> Todos los Estudiantes</a>
+        <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="top-bar">
+        <h5 class="mb-0">Resultados del Estudiante</h5>
+        <span class="text-muted" th:text="${#authentication.name}">docente</span>
+    </div>
+
+    <div class="main-content">
+
+        <!-- Info estudiante -->
+        <div class="info-estudiante">
+            <span style="color:#94a3b8; font-size:12px;">Estudiante</span>
+            <h5 class="mb-0 mt-1" th:text="${estudiante.primerNombre + ' ' + estudiante.primerApellido}">Nombre</h5>
+            <small style="color:#64748b;" th:text="${estudiante.tipoDocumento + ': ' + estudiante.numeroDocumento}"></small>
+        </div>
+
+        <!-- Último resultado destacado -->
+        <div th:if="${ultimoResultado}" class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card-dark text-center">
+                    <div style="color:#94a3b8; font-size:12px; margin-bottom:8px;">ÚLTIMO PUNTAJE TOTAL</div>
+                    <div class="puntaje-big" th:text="${ultimoResultado.puntajeTotal}">0</div>
+                    <div class="mt-2">
+                        <span class="badge-nivel"
+                              th:classappend="'nivel-' + ${ultimoResultado.nivelGlobal}"
+                              th:text="${ultimoResultado.nivelGlobal}">-</span>
+                    </div>
+                    <div class="mt-2" style="color:#64748b; font-size:12px;" th:text="${'Registro: ' + ultimoResultado.numeroRegistro}"></div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card-dark">
+                    <h6 style="color:#e94560;" class="mb-3">Detalle por Competencia</h6>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Comunicación Escrita</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.comunicacionEscrita}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.comunicacionEscritaNivel}"
+                                  th:text="${ultimoResultado.comunicacionEscritaNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Razonamiento Cuantitativo</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.razonamientoCuantitativo}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.razonamientoCuantitativoNivel}"
+                                  th:text="${ultimoResultado.razonamientoCuantitativoNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Lectura Crítica</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.lecturaCritica}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.lecturaCriticaNivel}"
+                                  th:text="${ultimoResultado.lecturaCriticaNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Competencias Ciudadanas</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.competenciasCiudadanas}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.competenciasCiudadanasNivel}"
+                                  th:text="${ultimoResultado.competenciasCiudadanasNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Inglés</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.ingles}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.inglesNivel}"
+                                  th:text="${ultimoResultado.inglesNivelDetalle}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Formulación de Proyectos</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.formulacionProyectos}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.formulacionProyectosNivel}"
+                                  th:text="${ultimoResultado.formulacionProyectosNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Pensamiento Científico</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.pensamientoCientifico}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.pensamientoCientificoNivel}"
+                                  th:text="${ultimoResultado.pensamientoCientificoNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Diseño de Software</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong th:text="${ultimoResultado.disenoSoftware}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.disenoSoftwareNivel}"
+                                  th:text="${ultimoResultado.disenoSoftwareNivel}">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial todos los resultados -->
+        <div class="card-dark">
+            <h6 style="color:#e94560;" class="mb-3">Historial Completo</h6>
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>N° Registro</th>
+                        <th>Fecha</th>
+                        <th>Puntaje Total</th>
+                        <th>Nivel Global</th>
+                        <th>Inglés</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(resultados)}">
+                        <td colspan="5" class="text-center py-4" style="color:#64748b;">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                            Sin resultados registrados
+                        </td>
+                    </tr>
+                    <tr th:each="r : ${resultados}">
+                        <td th:text="${r.numeroRegistro}">-</td>
+                        <td th:text="${r.fechaCargue}">-</td>
+                        <td><strong style="color:#e94560;" th:text="${r.puntajeTotal}">0</strong></td>
+                        <td>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${r.nivelGlobal}"
+                                  th:text="${r.nivelGlobal}">-</span>
+                        </td>
+                        <td th:text="${r.inglesNivelDetalle}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <a href="/docente/estudiantes/buscar" class="btn btn-sm" style="color:#94a3b8;">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

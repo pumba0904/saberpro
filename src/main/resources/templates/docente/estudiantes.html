@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Estudiantes - Docente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; }
+        .sidebar { background: #1e293b; min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; }
+        .sidebar .brand { color: #e94560; font-size: 20px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: #0f172a; color: #e94560; }
+        .sidebar a i { margin-right: 10px; }
+        .main-content { margin-left: 250px; padding: 30px; }
+        .top-bar { background: #1e293b; padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .card-dark { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 24px; }
+        .table { color: #e2e8f0; }
+        .table thead th { background: #0f172a; color: #94a3b8; border-color: #334155; font-size: 13px; }
+        .table tbody td { border-color: #334155; font-size: 14px; vertical-align: middle; }
+        .table tbody tr:hover { background: #0f172a; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+        <a href="/docente/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/docente/estudiantes/buscar"><i class="bi bi-search"></i> Buscar Estudiante</a>
+        <a href="/docente/estudiantes" class="active"><i class="bi bi-people"></i> Todos los Estudiantes</a>
+        <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="top-bar">
+        <h5 class="mb-0">Todos los Estudiantes</h5>
+        <span class="text-muted" th:text="${#authentication.name}">docente</span>
+    </div>
+
+    <div class="main-content">
+        <div class="card-dark">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Nombre</th>
+                        <th>Facultad</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(estudiantes)}">
+                        <td colspan="6" class="text-center py-4" style="color:#64748b;">
+                            <i class="bi bi-inbox fs-4 d-block mb-2"></i>
+                            No hay estudiantes registrados
+                        </td>
+                    </tr>
+                    <tr th:each="e : ${estudiantes}">
+                        <td th:text="${e.numeroDocumento}">-</td>
+                        <td th:text="${e.primerNombre + ' ' + e.primerApellido}">-</td>
+                        <td th:text="${e.facultad != null ? e.facultad.nombre : 'Sin asignar'}">-</td>
+                        <td th:text="${e.correo}">-</td>
+                        <td>
+                            <span th:if="${e.aprobadoSaberPro}" style="color:#22c55e; font-size:13px;">
+                                <i class="bi bi-check-circle"></i> Aprobado
+                            </span>
+                            <span th:unless="${e.aprobadoSaberPro}" style="color:#f59e0b; font-size:13px;">
+                                <i class="bi bi-clock"></i> Pendiente
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/docente/estudiantes/{id}/resultados(id=${e.id})}"
+                               class="btn btn-sm" style="background:rgba(99,102,241,0.15); color:#818cf8; border-radius:6px;">
+                                <i class="bi bi-bar-chart"></i> Resultados
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

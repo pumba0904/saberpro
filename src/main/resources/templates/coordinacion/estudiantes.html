@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Estudiantes - Saber Pro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .sidebar {
+            background: #1e293b;
+            min-height: 100vh;
+            padding: 20px 0;
+            width: 250px;
+            position: fixed;
+        }
+
+        .sidebar .brand {
+            color: #e94560;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 10px 20px 30px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #0f172a;
+            color: #e94560;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .top-bar {
+            background: #1e293b;
+            padding: 15px 30px;
+            margin-left: 250px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-table {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+
+        table thead th {
+            color: #94a3b8;
+            border-color: #334155;
+            font-size: 13px;
+        }
+
+        table tbody td {
+            color: #e2e8f0;
+            border-color: #334155;
+        }
+
+        table tbody tr:hover {
+            background: #0f172a;
+        }
+
+        .badge-aprobado {
+            background: #16a34a;
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .badge-pendiente {
+            background: #334155;
+            color: #94a3b8;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="brand">
+        <i class="bi bi-mortarboard"></i> Saber Pro
+		<a href="/coordinacion/informes"><i class="bi bi-file-earmark-bar-graph"></i> Informes</a>
+    </div>
+
+    <a href="/coordinacion/dashboard">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <a href="/coordinacion/estudiantes" class="active">
+        <i class="bi bi-people"></i> Estudiantes
+    </a>
+
+    <a href="/logout" style="position:absolute; bottom:20px; width:100%;">
+        <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+    </a>
+</div>
+
+<div class="top-bar">
+    <h5 class="mb-0">Gestión de Estudiantes</h5>
+
+    <a href="/coordinacion/estudiantes/nuevo" class="btn btn-danger btn-sm">
+        <i class="bi bi-plus"></i> Nuevo Estudiante
+    </a>
+</div>
+
+<div class="main-content">
+
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card-table p-3">
+
+        <table class="table table-hover mb-0">
+
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Facultad</th>
+                <th>Saber Pro</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr th:each="e : ${estudiantes}">
+                <td th:text="${e.id}"></td>
+
+                <td th:text="${e.numeroDocumento}"></td>
+
+                <td th:text="${e.primerNombre + ' ' + e.primerApellido}"></td>
+
+                <td th:text="${e.correo}"></td>
+
+                <td th:text="${e.facultad != null ? e.facultad.nombre : 'Sin facultad'}"></td>
+
+                <td>
+                    <span th:if="${e.aprobadoSaberPro}"
+                          class="badge-aprobado">
+                        Aprobado
+                    </span>
+
+                    <span th:unless="${e.aprobadoSaberPro}"
+                          class="badge-pendiente">
+                        Pendiente
+                    </span>
+                </td>
+
+                <td>
+
+                    <!-- Aprobar -->
+                    <a th:href="@{/coordinacion/estudiantes/aprobar/{id}(id=${e.id})}"
+                       th:if="${!e.aprobadoSaberPro}"
+                       class="btn btn-sm btn-outline-success me-1"
+                       onclick="return confirm('¿Aprobar este estudiante?')">
+                        <i class="bi bi-check"></i>
+                    </a>
+
+                    <!-- Editar -->
+                    <a th:href="@{/coordinacion/estudiantes/editar/{id}(id=${e.id})}"
+                       class="btn btn-sm btn-outline-warning me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <!-- Ver Resultados -->
+                    <a th:href="@{/coordinacion/estudiantes/{id}/resultados(id=${e.id})}"
+                       class="btn btn-sm me-1"
+                       style="background:rgba(99,102,241,0.15); color:#818cf8; border-radius:6px;"
+                       title="Ver Resultados">
+                        <i class="bi bi-bar-chart"></i>
+                    </a>
+
+                    <!-- Eliminar -->
+                    <a th:href="@{/coordinacion/estudiantes/eliminar/{id}(id=${e.id})}"
+                       class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('¿Eliminar este estudiante?')">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(estudiantes)}">
+                <td colspan="7" class="text-center text-muted">
+                    No hay estudiantes registrados
+                </td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

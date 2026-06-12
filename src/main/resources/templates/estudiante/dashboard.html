@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Estudiante</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; }
+        .sidebar { background: #1e293b; min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; }
+        .sidebar .brand { color: #e94560; font-size: 20px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: #0f172a; color: #e94560; }
+        .sidebar a i { margin-right: 10px; }
+        .main-content { margin-left: 250px; padding: 30px; }
+        .top-bar { background: #1e293b; padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .stat-card { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+        .stat-card .number { font-size: 36px; font-weight: 700; color: #e94560; }
+        .stat-card .label { color: #94a3b8; font-size: 14px; }
+        .info-card { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+        .competencia-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; }
+        .competencia-row:last-child { border-bottom: none; }
+        .badge-nivel { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .nivel-ALTO { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .nivel-MEDIO { background: rgba(234,179,8,0.15); color: #eab308; }
+        .nivel-BAJO { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .welcome-banner { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #334155; border-left: 4px solid #e94560; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+        <a href="/estudiante/dashboard" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/estudiante/perfil"><i class="bi bi-person"></i> Mis Datos</a>
+        <a href="/estudiante/resultado/ultimo"><i class="bi bi-bar-chart"></i> Último Resultado</a>
+        <a href="/estudiante/resultados"><i class="bi bi-clock-history"></i> Todos mis Resultados</a>
+        <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="top-bar">
+        <h5 class="mb-0">Mi Dashboard</h5>
+        <span class="text-muted" th:text="${#authentication.name}">estudiante</span>
+    </div>
+
+    <div class="main-content">
+
+        <!-- Banner bienvenida -->
+        <div class="welcome-banner">
+            <h5 class="mb-1" th:text="'Bienvenido, ' + ${estudiante.primerNombre} + ' ' + ${estudiante.primerApellido}">Nombre</h5>
+            <small style="color:#64748b;" th:text="${estudiante.facultad != null ? estudiante.facultad.nombre : 'Sin facultad asignada'}"></small>
+            <div class="mt-2">
+                <span th:if="${estudiante.aprobadoSaberPro}"
+                      style="background:rgba(34,197,94,0.15); color:#22c55e; padding:4px 12px; border-radius:20px; font-size:13px;">
+                    <i class="bi bi-check-circle me-1"></i> Aprobado Saber Pro
+                </span>
+                <span th:unless="${estudiante.aprobadoSaberPro}"
+                      style="background:rgba(234,179,8,0.15); color:#eab308; padding:4px 12px; border-radius:20px; font-size:13px;">
+                    <i class="bi bi-clock me-1"></i> Pendiente aprobación
+                </span>
+            </div>
+        </div>
+
+        <!-- Último resultado -->
+        <div th:if="${ultimoResultado}" class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card text-center">
+                    <div style="color:#94a3b8; font-size:12px; margin-bottom:8px;">ÚLTIMO PUNTAJE TOTAL</div>
+                    <div class="number" th:text="${ultimoResultado.puntajeTotal}">0</div>
+                    <div class="mt-2">
+                        <span class="badge-nivel"
+                              th:classappend="'nivel-' + ${ultimoResultado.nivelGlobal}"
+                              th:text="${ultimoResultado.nivelGlobal}">-</span>
+                    </div>
+                    <div class="mt-3">
+                        <a href="/estudiante/resultado/ultimo" class="btn btn-sm"
+                           style="background:#e94560; color:#fff; border-radius:8px;">
+                            Ver detalle completo
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="info-card">
+                    <h6 style="color:#e94560;" class="mb-3">Resumen de Competencias</h6>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Comunicación Escrita</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <strong th:text="${ultimoResultado.comunicacionEscrita}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.comunicacionEscritaNivel}"
+                                  th:text="${ultimoResultado.comunicacionEscritaNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Razonamiento Cuantitativo</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <strong th:text="${ultimoResultado.razonamientoCuantitativo}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.razonamientoCuantitativoNivel}"
+                                  th:text="${ultimoResultado.razonamientoCuantitativoNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Lectura Crítica</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <strong th:text="${ultimoResultado.lecturaCritica}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.lecturaCriticaNivel}"
+                                  th:text="${ultimoResultado.lecturaCriticaNivel}">-</span>
+                        </div>
+                    </div>
+                    <div class="competencia-row">
+                        <span style="color:#94a3b8;">Inglés</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <strong th:text="${ultimoResultado.ingles}">-</strong>
+                            <span class="badge-nivel" th:classappend="'nivel-' + ${ultimoResultado.inglesNivel}"
+                                  th:text="${ultimoResultado.inglesNivelDetalle}">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:unless="${ultimoResultado}" class="info-card text-center py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-3" style="color:#334155;"></i>
+            <p style="color:#64748b;">Aún no tienes resultados Saber Pro registrados.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

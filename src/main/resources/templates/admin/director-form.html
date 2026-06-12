@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Director - Saber Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; }
+        .sidebar { background: #1e293b; min-height: 100vh; padding: 20px 0; width: 250px; position: fixed; }
+        .sidebar .brand { color: #e94560; font-size: 20px; font-weight: 700; padding: 10px 20px 30px; }
+        .sidebar a { display: block; color: #94a3b8; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: #0f172a; color: #e94560; }
+        .sidebar a i { margin-right: 10px; }
+        .main-content { margin-left: 250px; padding: 30px; }
+        .top-bar { background: #1e293b; padding: 15px 30px; margin-left: 250px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        .form-card { background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 30px; max-width: 700px; }
+        .form-control, .form-select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; }
+        .form-control:focus, .form-select:focus { background: #0f172a; border-color: #e94560; color: #e2e8f0; box-shadow: none; }
+        .form-label { color: #94a3b8; font-size: 14px; }
+        .form-select option { background: #0f172a; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="brand"><i class="bi bi-mortarboard"></i> Saber Pro</div>
+        <a href="/admin/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="/admin/directores" class="active"><i class="bi bi-person-badge"></i> Directores</a>
+        <a href="/admin/docentes"><i class="bi bi-person-workspace"></i> Docentes</a>
+        <a href="/admin/facultades"><i class="bi bi-building"></i> Facultades</a>
+        <a href="/logout" style="position:absolute; bottom:20px; width:100%;"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+    </div>
+
+    <div class="top-bar">
+        <h5 class="mb-0" th:text="${director.id == null} ? 'Nuevo Director' : 'Editar Director'">Director</h5>
+        <a href="/admin/directores" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
+    </div>
+
+    <div class="main-content">
+        <div class="form-card">
+            <form th:action="@{/admin/directores/guardar}" th:object="${director}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" th:field="*{nombre}" class="form-control" placeholder="Nombre" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Apellido *</label>
+                        <input type="text" th:field="*{apellido}" class="form-control" placeholder="Apellido" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Cédula *</label>
+                        <input type="text" th:field="*{cedula}" class="form-control" placeholder="Número de cédula" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" th:field="*{telefono}" class="form-control" placeholder="Teléfono">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Correo</label>
+                    <input type="email" th:field="*{correo}" class="form-control" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Facultad</label>
+                    <select name="facultadId" class="form-select">
+                        <option value="">-- Seleccionar Facultad --</option>
+                        <option th:each="f : ${facultades}"
+                                th:value="${f.id}"
+                                th:text="${f.nombre}"
+                                th:selected="${director.facultad != null && director.facultad.id == f.id}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-danger px-4"><i class="bi bi-save me-1"></i> Guardar</button>
+                <a href="/admin/directores" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
